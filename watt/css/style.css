@@ -1,4 +1,20 @@
-/* P4 : remplacez ce commentaire par le reset de l’atelier. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* à vous : reset */
 
 body {
@@ -56,6 +72,8 @@ nav a:focus-visible {
 
 /* P4 : l’air appartient à l’intérieur du mur. */
 section {
+  padding-block: 4.5rem;
+
   /* à vous : padding-block */
 }
 
@@ -76,9 +94,9 @@ section {
 
 /* P2 : complétez le cadre du texte. */
 .container {
-width: 80%;
-max-width: 960px;
-margin-inline: auto;
+  width: 80%;
+  max-width: 960px;
+  margin-inline: auto;
 }
 
 
