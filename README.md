@@ -1,5 +1,5 @@
 # option-web-zacharie
 
-Semaine 1, projet en cadre scolaire, découverte de Github et qulques galères mais je m'en suis sorti comme un chef
+Semaine 1, premiers pas en option Web au CPNV de Saite-Croix. Découverte de Github.
 
-https://zackitoff.github.io/option-web-zacharie/watt/ ceci est un exercice de découverte sur Watt !
+https://zackitoff.github.io/option-web-zacharie/watt/ ceci est un exercice de découverte.
