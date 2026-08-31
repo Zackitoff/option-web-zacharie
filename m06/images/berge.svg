@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Berge en crue">
+  <rect width="1600" height="1000" fill="#8aa0a8"/>
+  <path d="M0 280h1600v720H0Z" fill="#3d6f8f"/>
+  <path d="M0 480h1600v520H0Z" fill="#2a5470"/>
+  <path d="M0 680h1600v320H0Z" fill="#1b3a50"/>
+  <rect x="180" y="280" width="70" height="80" fill="#6b5344"/>
+  <rect x="980" y="240" width="90" height="140" fill="#5a4638"/>
+</svg>
