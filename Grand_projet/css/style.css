@@ -1,0 +1,210 @@
+:root {
+  --color-bg: #0b0e14;
+  --color-bg-alt: #12161f;
+  --color-text: #f5f5f0;
+  --color-muted: rgba(245, 245, 240, 0.72);
+  --color-accent: #c8102e;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overscroll-behavior: none;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+
+/* État de départ des éléments animés par GSAP (chapter-content.js les anime ensuite) ;
+   sans JS, .js n'est jamais posée sur <html> donc tout reste visible d'emblée. */
+.js .chapter-title,
+.js .chapter-text,
+.js .chapter-kicker,
+.js .compare-item {
+  opacity: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Chapitres plein écran (1, 2, 4, 5) --- */
+
+.chapter {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.chapter-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.chapter--sepia .chapter-bg {
+  filter: sepia(0.55) saturate(0.7) contrast(1.05) brightness(0.95);
+}
+
+.chapter:not(.chapter--compare)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to top, rgba(6, 8, 12, 0.85), rgba(6, 8, 12, 0.35) 50%, rgba(6, 8, 12, 0) 80%);
+  pointer-events: none;
+}
+
+.chapter-content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(1.5rem, 5vw, 4rem);
+  max-width: 42rem;
+}
+
+.chapter-title {
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  line-height: 1.15;
+  margin: 0 0 0.75rem;
+  font-weight: 700;
+}
+
+.chapter-kicker {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin: 0 0 0.5rem;
+}
+
+.chapter-text {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: var(--color-muted);
+  max-width: 38ch;
+  margin: 0;
+}
+
+.counter {
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Chapitre 3 — comparaison avant/pendant --- */
+
+.chapter--compare {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 4vw, 3rem) clamp(1.25rem, 5vw, 4rem);
+  background: var(--color-bg-alt);
+}
+
+.chapter-intro {
+  max-width: 42rem;
+}
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+}
+
+.compare-item {
+  position: relative;
+  margin: 0;
+  height: clamp(160px, 38svh, 420px);
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #1a1f2b;
+}
+
+.compare-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compare-item figcaption {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 1;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+
+@media (max-width: 680px) {
+  .compare-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Empilées, les 2 photos doivent quand même tenir sur un seul écran (pagination). */
+  .compare-item {
+    height: clamp(110px, 22svh, 280px);
+  }
+}
+
+/* --- Pagination plein écran : un scroll = un chapitre (voir js/script.js) ---
+   Sous prefers-reduced-motion, on désactive la capture du scroll côté JS ET on repasse
+   les sections en hauteur libre ici, pour ne jamais rogner du contenu (zoom texte, etc.). */
+@media (prefers-reduced-motion: reduce) {
+  .chapter {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
+    overflow: visible;
+  }
+}
+
+/* --- Crédits --- */
+
+.credits {
+  background: var(--color-bg-alt);
+  color: var(--color-muted);
+  padding: clamp(2rem, 5vw, 3rem) clamp(1.25rem, 5vw, 4rem);
+  font-size: 0.875rem;
+}
+
+.credits ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+  display: grid;
+  gap: 0.35rem;
+}

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyrule — La Plongée dans le Royaume</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Barre de progression de la plongée -->
+<div class="progress-rail" aria-hidden="true">
+  <div class="progress-fill" id="progressFill"></div>
+</div>
+
+<main class="wrapper" id="wrapper">
+
+  <!-- SECTION 1 : LE SANCTUAIRE CÉLESTE -->
+  <section class="panel panel--1" id="panel1">
+    <div class="panel__media">
+      <img class="panel__img" src="images/01_celestial_shrine.png" alt="Le Sanctuaire Céleste, îles flottantes au-dessus d'Hyrule">
+      <div class="panel__overlay panel__overlay--sky"></div>
+    </div>
+
+    <!-- Texture parallax : nuages (dépose ton image dans images/texture_clouds.png) -->
+    <div class="panel__texture" aria-hidden="true">
+      <span class="cloud cloud--1"></span>
+      <span class="cloud cloud--2"></span>
+      <span class="cloud cloud--3"></span>
+    </div>
+
+    <div class="panel__content">
+      <span class="chapter-mark">I</span>
+      <h1 class="panel__title">LES CIEUX D'HYRULE</h1>
+      <p class="panel__subtitle">Là où tout commence... Faites défiler pour plonger vers le royaume.</p>
+      <button class="chapter-next" type="button" data-next-chapter="2">CHAPITRE SUIVANT <span aria-hidden="true">↓</span></button>
+      <div class="scroll-cue" aria-hidden="true">
+        <span class="scroll-cue__line"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 : LA CHUTE D'HYRULE -->
+  <section class="panel panel--2" id="panel2">
+    <div class="panel__media">
+      <img class="panel__img" src="images/02_corrupted_castle.png" alt="Le Château d'Hyrule enveloppé de miasme corrompu">
+      <div class="panel__overlay panel__overlay--corrupt"></div>
+    </div>
+
+    <div class="panel__texture" aria-hidden="true">
+      <span class="smoke smoke--1"></span>
+      <span class="smoke smoke--2"></span>
+    </div>
+
+    <!-- Texture parallax : fumée / miasme rouge (dépose ton image dans images/texture_smoke.png) -->
+    <div class="panel__content">
+      <span class="chapter-mark">II</span>
+      <h2 class="panel__title">LA CORRUPTION DU ROYAUME</h2>
+      <p class="panel__subtitle">Le Château d'Hyrule est captif d'un mal ancien.</p>
+      <button class="chapter-next" type="button" data-next-chapter="3">CHAPITRE SUIVANT <span aria-hidden="true">↓</span></button>
+    </div>
+  </section>
+
+  <!-- SECTION 3 : LE GOUFFRE -->
+  <section class="panel panel--3" id="panel3">
+    <div class="panel__media">
+      <img class="panel__img" src="images/03_the_chasm.png" alt="Descente vertigineuse dans le Gouffre">
+      <div class="panel__overlay panel__overlay--chasm"></div>
+    </div>
+
+    <!-- Texture parallax : mêmes particules que le chapitre IV, recolorées en teal -->
+    <div class="panel__texture" aria-hidden="true">
+      <span class="fx fx--tendril fx--tendril-teal" style="top:10%; left:15%; width:360px; height:360px; animation-duration:22s; animation-delay:0s;"></span>
+      <span class="fx fx--tendril fx--tendril-teal" style="top:55%; left:60%; width:420px; height:420px; animation-duration:26s; animation-delay:-8s;"></span>
+
+      <span class="fx fx--ember fx--ember-teal" style="left:12%; animation-duration:7s; animation-delay:0s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:25%; animation-duration:9s; animation-delay:-1.5s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:38%; animation-duration:6.5s; animation-delay:-3s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:50%; animation-duration:8s; animation-delay:-4.5s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:62%; animation-duration:7.5s; animation-delay:-2s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:74%; animation-duration:9.5s; animation-delay:-5.5s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:85%; animation-duration:6.8s; animation-delay:-1s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:6%; animation-duration:8.4s; animation-delay:-6.2s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:18%; animation-duration:6.2s; animation-delay:-2.8s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:31%; animation-duration:8.8s; animation-delay:-7.1s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:44%; animation-duration:7.1s; animation-delay:-4.2s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:57%; animation-duration:9.2s; animation-delay:-0.8s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:69%; animation-duration:6.7s; animation-delay:-5.9s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:80%; animation-duration:8.1s; animation-delay:-3.5s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:3%; animation-duration:7.8s; animation-delay:-1.7s;"></span>
+      <span class="fx fx--ember fx--ember-teal" style="left:93%; animation-duration:9.8s; animation-delay:-6.6s;"></span>
+    </div>
+
+    <div class="panel__content">
+      <span class="chapter-mark">III</span>
+      <h2 class="panel__title">LES ABYSSES</h2>
+      <p class="panel__subtitle">Plongée vertigineuse dans l'obscurité de la terre.</p>
+      <button class="chapter-next" type="button" data-scroll-to="end">VOIR L'AFFRONTEMENT FINAL <span aria-hidden="true">↓</span></button>
+    </div>
+  </section>
+
+  <!-- SECTION 4 : LE ROI DÉMON -->
+  <section class="panel panel--4" id="panel4">
+    <div class="panel__media">
+      <img class="panel__img" src="images/04_ganondorf_lair.png" alt="L'antre de Ganondorf, le Roi Démon">
+      <div class="panel__overlay panel__overlay--lair"></div>
+    </div>
+
+    <!-- Texture parallax : braises incandescentes + volutes de ténèbres -->
+    <div class="panel__texture" aria-hidden="true">
+      <span class="fx fx--tendril" style="top:10%; left:20%; width:360px; height:360px; animation-duration:22s; animation-delay:0s;"></span>
+      <span class="fx fx--tendril" style="top:50%; left:60%; width:420px; height:420px; animation-duration:26s; animation-delay:-8s;"></span>
+
+      <span class="fx fx--ember" style="left:15%; animation-duration:7s; animation-delay:0s;"></span>
+      <span class="fx fx--ember" style="left:28%; animation-duration:9s; animation-delay:-1.5s;"></span>
+      <span class="fx fx--ember" style="left:40%; animation-duration:6.5s; animation-delay:-3s;"></span>
+      <span class="fx fx--ember" style="left:52%; animation-duration:8s; animation-delay:-4.5s;"></span>
+      <span class="fx fx--ember" style="left:64%; animation-duration:7.5s; animation-delay:-2s;"></span>
+      <span class="fx fx--ember" style="left:75%; animation-duration:9.5s; animation-delay:-5.5s;"></span>
+      <span class="fx fx--ember" style="left:85%; animation-duration:6.8s; animation-delay:-1s;"></span>
+      <span class="fx fx--ember" style="left:8%; animation-duration:8.4s; animation-delay:-6.2s;"></span>
+      <span class="fx fx--ember" style="left:20%; animation-duration:6.2s; animation-delay:-2.8s;"></span>
+      <span class="fx fx--ember" style="left:33%; animation-duration:8.8s; animation-delay:-7.1s;"></span>
+      <span class="fx fx--ember" style="left:46%; animation-duration:7.1s; animation-delay:-4.2s;"></span>
+      <span class="fx fx--ember" style="left:58%; animation-duration:9.2s; animation-delay:-0.8s;"></span>
+      <span class="fx fx--ember" style="left:70%; animation-duration:6.7s; animation-delay:-5.9s;"></span>
+      <span class="fx fx--ember" style="left:81%; animation-duration:8.1s; animation-delay:-3.5s;"></span>
+      <span class="fx fx--ember" style="left:4%; animation-duration:7.8s; animation-delay:-1.7s;"></span>
+      <span class="fx fx--ember" style="left:93%; animation-duration:9.8s; animation-delay:-6.6s;"></span>
+    </div>
+
+    <div class="panel__content">
+      <span class="chapter-mark chapter-mark--stagger">IV</span>
+      <h2 class="panel__title panel__title--stagger">LE ROI DÉMON</h2>
+      <p class="panel__subtitle panel__subtitle--stagger">L'affrontement final vous attend au fond du monde.</p>
+      <button class="chapter-next chapter-next--stagger" type="button" data-scroll-to="top">REMONTER AU DÉBUT <span aria-hidden="true">↑</span></button>
+    </div>
+  </section>
+
+</main>
+
+<!-- CDN GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

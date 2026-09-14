@@ -1,0 +1,435 @@
+/* ==========================================================================
+   HYRULE — SCROLLYTELLING
+   Palette : #0a0906 (obscurité), #e6c875 (or mystique), #ffffff (lumière)
+   Accents atmosphériques par chapitre : ciel / miasme / gouffre / antre
+   ========================================================================== */
+
+:root {
+  --ink: #0a0906;
+  --gold: #e6c875;
+  --gold-soft: #cfa94f;
+  --white: #ffffff;
+
+  --font-display: 'Cinzel Decorative', serif;
+  --font-title: 'Cinzel', serif;
+  --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--ink);
+  scroll-behavior: auto;
+}
+
+body {
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: none;
+}
+
+/* --------------------------------------------------------------------
+   BARRE DE PROGRESSION — la corde qui vous relie à la surface
+   -------------------------------------------------------------------- */
+.progress-rail {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 3px;
+  height: 100vh;
+  background: rgba(230, 200, 117, 0.12);
+  z-index: 100;
+}
+
+.progress-fill {
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(to bottom, var(--gold), var(--gold-soft));
+  box-shadow: 0 0 12px rgba(230, 200, 117, 0.6);
+  transform-origin: top;
+}
+
+/* Bouton de navigation entre les chapitres */
+.chapter-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.4rem;
+  padding: 0.8rem 1.05rem;
+  border: 1px solid rgba(230, 200, 117, 0.7);
+  border-radius: 999px;
+  background: rgba(10, 9, 6, 0.72);
+  color: var(--gold);
+  font: 600 0.66rem/1 var(--font-title);
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: background 180ms ease, color 180ms ease, opacity 180ms ease, transform 180ms ease;
+}
+
+.chapter-next:hover,
+.chapter-next:focus-visible {
+  background: var(--gold);
+  color: var(--ink);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+/* --------------------------------------------------------------------
+   WRAPPER + PANELS
+   Chaque panel reste FIXE plein écran ; c'est le scroll qui pilote
+   uniquement opacité + zoom via GSAP. Plus aucun glissement d'image :
+   un chapitre zoome sur place, puis on coupe net sur le suivant.
+   -------------------------------------------------------------------- */
+.wrapper {
+  position: relative;
+  width: 100vw;
+  height: 400vh; /* 4 chapitres x 100vh de scroll chacun */
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Seul le chapitre visible peut recevoir les clics. */
+.panel--interactive {
+  pointer-events: auto;
+}
+
+/* Le premier chapitre est visible dès le chargement. Les suivants sont
+   révélés un à un par la timeline JS, jamais tous en même temps. */
+.panel--1 { opacity: 1; z-index: 1; }
+.panel--2 { z-index: 2; }
+.panel--3 { z-index: 3; }
+.panel--4 { z-index: 4; }
+
+.panel__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.panel__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  will-change: transform;
+}
+
+/* L'ouverture commence dans l'ombre, puis se révèle au premier scroll. */
+.panel--1 .panel__img {
+  filter: brightness(0.42);
+  transition: filter 420ms ease-out;
+}
+
+.panel--1 .panel__img--revealed {
+  filter: brightness(1);
+}
+
+.panel__overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Overlays très légers : juste assez pour garantir la lisibilité du texte
+   au centre, sans plaquer un voile sur des images déjà sombres. */
+.panel__overlay--sky {
+  background: linear-gradient(180deg, rgba(10, 9, 6, 0) 0%, rgba(10, 9, 6, 0.1) 55%, rgba(10, 9, 6, 0.35) 100%);
+}
+
+.panel__overlay--corrupt {
+  background: linear-gradient(180deg, rgba(10, 9, 6, 0) 0%, rgba(10, 9, 6, 0.1) 55%, rgba(10, 9, 6, 0.4) 100%);
+}
+
+.panel__overlay--chasm {
+  background: linear-gradient(180deg, rgba(10, 9, 6, 0) 0%, rgba(10, 9, 6, 0.12) 55%, rgba(10, 9, 6, 0.4) 100%);
+}
+
+.panel__overlay--lair {
+  background: linear-gradient(180deg, rgba(10, 9, 6, 0) 0%, rgba(10, 9, 6, 0.12) 55%, rgba(10, 9, 6, 0.42) 100%);
+}
+
+/* --------------------------------------------------------------------
+   TEXTURES PARALLAX
+   Couche décorative entre l'image et le texte. Animée en continu par
+   CSS (dérive, scintillement) et déplacée verticalement par GSAP au
+   scroll (voir script.js) pour un vrai effet de profondeur.
+   -------------------------------------------------------------------- */
+.panel__texture {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.fx,
+.cloud {
+  position: absolute;
+  will-change: transform, opacity;
+}
+
+/* Nuages composés uniquement de dégradés CSS : pas de texture bitmap. */
+.cloud {
+  width: clamp(420px, 58vw, 900px);
+  height: clamp(180px, 24vw, 370px);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 18% 70%, rgba(255, 255, 255, 0.55) 0 13%, transparent 32%),
+    radial-gradient(ellipse at 38% 43%, rgba(255, 255, 255, 0.65) 0 20%, transparent 42%),
+    radial-gradient(ellipse at 61% 58%, rgba(241, 248, 255, 0.55) 0 23%, transparent 45%),
+    radial-gradient(ellipse at 82% 72%, rgba(255, 255, 255, 0.38) 0 14%, transparent 34%);
+  filter: blur(20px);
+  mix-blend-mode: screen;
+  animation: cloudDrift 28s ease-in-out infinite;
+}
+
+.cloud--1 {
+  top: 8%;
+  left: -18%;
+  opacity: 0.48;
+  animation-duration: 32s;
+}
+
+.cloud--2 {
+  top: 54%;
+  right: -22%;
+  opacity: 0.36;
+  transform: scaleX(-1) scale(1.15);
+  animation-duration: 42s;
+  animation-delay: -15s;
+}
+
+.cloud--3 {
+  top: 30%;
+  left: 28%;
+  opacity: 0.26;
+  transform: scale(0.8);
+  animation-duration: 36s;
+  animation-delay: -8s;
+}
+
+/* Miasme rouge du chapitre II, également créé en CSS. */
+.smoke {
+  position: absolute;
+  width: clamp(520px, 70vw, 1100px);
+  height: clamp(250px, 34vw, 520px);
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 20% 65%, rgba(255, 75, 45, 0.62) 0 10%, transparent 34%),
+    radial-gradient(ellipse at 48% 40%, rgba(205, 20, 35, 0.7) 0 21%, transparent 47%),
+    radial-gradient(ellipse at 78% 68%, rgba(255, 85, 35, 0.5) 0 14%, transparent 38%);
+  filter: blur(32px);
+  mix-blend-mode: screen;
+  animation: smokeDrift 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.smoke--1 {
+  top: 8%;
+  left: -24%;
+  opacity: 0.58;
+}
+
+.smoke--2 {
+  bottom: 2%;
+  right: -28%;
+  opacity: 0.43;
+  animation-duration: 23s;
+  animation-delay: -9s;
+}
+
+/* --- Chapitre I : nuages (texture image) ---
+   contrast() écrase les noirs imparfaits vers du vrai noir, ce que
+   mix-blend-mode: screen efface ensuite complètement. */
+@keyframes cloudDrift {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(3vw); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes smokeDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3vw, -3vh) scale(1.12); }
+}
+
+/* --- Chapitre II : fumée / miasme (texture image, teintée en rouge) --- */
+/* --- Chapitre III : cristaux teal --- */
+.fx--crystal {
+  width: 14px;
+  height: 36px;
+  background: linear-gradient(160deg, #eafffb 0%, #2dd4bf 55%, #0f766e 100%);
+  clip-path: polygon(50% 0%, 100% 32%, 76% 100%, 24% 100%, 0% 32%);
+  box-shadow: 0 0 16px rgba(45, 212, 191, 0.65), 0 0 3px rgba(234, 255, 251, 0.8);
+  transform: rotate(var(--rot, 0deg));
+  animation-name: crystalFloat, crystalTwinkle;
+  animation-duration: 6s, 3.4s;
+  animation-timing-function: ease-in-out, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+}
+
+@keyframes crystalFloat {
+  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translateY(-12px) rotate(var(--rot, 0deg)); }
+}
+
+@keyframes crystalTwinkle {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* --- Chapitre IV : braises incandescentes + volutes de ténèbres --- */
+.fx--tendril {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(120, 10, 20, 0.45) 0%, rgba(60, 5, 15, 0.25) 55%, transparent 75%);
+  filter: blur(40px);
+  opacity: 0.65;
+  animation-name: tendrilDrift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes tendrilDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(2vw, -1.5vh) scale(1.1); }
+}
+
+.fx--ember {
+  bottom: -5%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffcf8a 0%, #ff8a3d 45%, #b3220c 80%, transparent 100%);
+  box-shadow: 0 0 8px rgba(255, 130, 40, 0.85);
+  animation-name: emberRise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes emberRise {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  8%   { opacity: 1; }
+  80%  { opacity: 0.75; }
+  100% { transform: translateY(-105vh) translateX(2vw); opacity: 0; }
+}
+
+/* --- Variantes teal (réutilisées pour le chapitre III) --- */
+.fx--tendril-teal {
+  background: radial-gradient(circle, rgba(20, 150, 140, 0.4) 0%, rgba(10, 90, 85, 0.22) 55%, transparent 75%);
+}
+
+.fx--ember-teal {
+  background: radial-gradient(circle, #d7fffa 0%, #5eead4 45%, #0f766e 80%, transparent 100%);
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
+}
+
+/* --------------------------------------------------------------------
+   TEXTE / CONTENU
+   -------------------------------------------------------------------- */
+.panel__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 6vw;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chapter-mark {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  color: var(--gold-soft);
+  letter-spacing: 0.4em;
+  margin-bottom: 1.2rem;
+  opacity: 0.85;
+}
+
+.panel__title {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(230, 200, 117, 0.35), 0 4px 24px rgba(0, 0, 0, 0.8);
+  line-height: 1.15;
+}
+
+.panel--1 .panel__title {
+  font-family: var(--font-display);
+  font-weight: 900;
+}
+
+.panel__subtitle {
+  margin-top: 1.4rem;
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+  color: var(--white);
+  letter-spacing: 0.02em;
+  line-height: 1.7;
+  max-width: 640px;
+}
+
+/* Indicateur de scroll — première section uniquement */
+.scroll-cue {
+  margin-top: 3.5rem;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.scroll-cue__line {
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  animation: scrollPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 0.3; }
+  50%  { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 0.3; }
+}
+
+/* --------------------------------------------------------------------
+   ACCESSIBILITÉ
+   -------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue__line { animation: none; }
+  .fx { animation: none !important; }
+}
+
+/* --------------------------------------------------------------------
+   RESPONSIVE
+   -------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  .panel__content { padding: 0 8vw; }
+  .panel__subtitle { max-width: 460px; }
+}
