@@ -17,6 +17,16 @@
 <body>
   <h1 class="sr-only">Du Voyebœuf à la Raiffeisen Arena : le récit d'une reconstruction</h1>
 
+  <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false" aria-label="Activer le son">🔇</button>
+
+  <nav class="chapter-nav" aria-label="Navigation des chapitres">
+    <a class="chapter-dot" href="#chapitre-1" data-index="0" aria-label="Chapitre 1 : 1973"></a>
+    <a class="chapter-dot" href="#chapitre-2" data-index="1" aria-label="Chapitre 2 : le vote de 2018"></a>
+    <a class="chapter-dot" href="#chapitre-3" data-index="2" aria-label="Chapitre 3 : la démolition, 2019–2020"></a>
+    <a class="chapter-dot" href="#chapitre-4" data-index="3" aria-label="Chapitre 4 : la Raiffeisen Arena, 2022"></a>
+    <a class="chapter-dot" href="#chapitre-5" data-index="4" aria-label="Chapitre 5 : aujourd'hui"></a>
+  </nav>
+
   <main>
     <!-- Chapitre 1 — 1973, aucun mouvement (photo figée, désaturée) -->
     <section class="chapter chapter--1 chapter--sepia" id="chapitre-1">
@@ -28,7 +38,11 @@
         fetchpriority="high"
         decoding="async">
       <div class="chapter-content">
-        <h2 class="chapter-title">1973 — Le Voyebœuf ouvre ses portes</h2>
+        <span class="title-mark" aria-hidden="true"></span>
+        <h2 class="chapter-title">
+          <span class="chapter-year">1973</span>
+          <span class="chapter-title-line">Le Voyebœuf ouvre ses portes</span>
+        </h2>
         <p class="chapter-text">Construite à Porrentruy, la patinoire couverte devient vite un lieu de rassemblement : les délégués du Rassemblement jurassien s'y réunissent encore en 1974.</p>
       </div>
     </section>
@@ -42,6 +56,7 @@
         loading="lazy"
         decoding="async">
       <div class="chapter-content">
+        <span class="title-mark" aria-hidden="true"></span>
         <p class="chapter-kicker">Le chaudron, usé mais aimé</p>
         <h2 class="chapter-title">1<sup>er</sup> juillet 2018 — 2×OUI</h2>
         <p class="chapter-text">Devenue vétuste et hors normes, l'enceinte reste pourtant chère aux Ajoulots. La population vote massivement le crédit de rénovation : une décision collective, pas un choix imposé.</p>
@@ -51,6 +66,7 @@
     <!-- Chapitre 3 — comparaison avant/pendant, fondu déclenché une seule fois (pas de scrub) -->
     <section class="chapter chapter--compare" id="chapitre-3">
       <div class="chapter-intro">
+        <span class="title-mark" aria-hidden="true"></span>
         <h2 class="chapter-title">2019–2020 — Le Voyebœuf disparaît</h2>
         <p class="chapter-text">Pièce par pièce, l'ancienne structure est démontée pour laisser place au nouveau bâtiment. Ce qui existait depuis 1973 a vraiment disparu.</p>
       </div>
@@ -83,10 +99,13 @@
         loading="lazy"
         decoding="async">
       <div class="chapter-content">
-        <h2 class="chapter-title">
-          <span aria-hidden="true"><span class="counter" data-target="5178">0</span> places. National League.</span>
+        <span class="title-mark" aria-hidden="true"></span>
+        <h2 class="chapter-title chapter-title--stat">
+          <span class="stat-number" aria-hidden="true"><span class="counter" data-target="5178">0</span></span>
+          <span class="stat-label" aria-hidden="true">places. National League.</span>
           <span class="sr-only">5178 places. National League.</span>
         </h2>
+        <div class="stat-bar" aria-hidden="true"><div class="stat-bar-fill"></div></div>
         <p class="chapter-text">En 2022, la Raiffeisen Arena est inaugurée. Le pari collectif est réussi : le HC Ajoie est promu en National League.</p>
       </div>
     </section>
@@ -100,6 +119,7 @@
         loading="lazy"
         decoding="async">
       <div class="chapter-content">
+        <span class="title-mark" aria-hidden="true"></span>
         <h2 class="chapter-title">Aujourd'hui, l'Ajoie joue à guichets fermés</h2>
         <p class="chapter-text">Le HC Ajoie joue désormais à guichets fermés dans une arena moderne : le lieu a retrouvé — et dépassé — sa place dans la communauté.</p>
       </div>
