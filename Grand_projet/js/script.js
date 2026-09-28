@@ -7,6 +7,11 @@
     return;
   }
 
+  // Chapitre 3 : les engins de chantier ont une timeline de sortie à part,
+  // jouée à la demande juste avant de quitter le chapitre (voir goTo()).
+  const compareIndex = sections.findIndex((s) => s.classList.contains('chapter--compare'));
+  let convoyExitTl = null;
+
   history.scrollRestoration = 'manual';
   window.scrollTo(0, 0);
 
@@ -210,6 +215,43 @@
       }
       if (introText) tl.fromTo(introText, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.5);
 
+      // Convoi de chantier : grue, pelleteuse et ouvrier entrent par la gauche et se
+      // posent dans leur bandeau dédié (jamais sur les photos), décalés dans le temps
+      // pour un effet de profondeur. Ils y restent tant que le chapitre est affiché.
+      const convoyEls = {
+        crane: section.querySelector('.convoy-item--crane'),
+        excavator: section.querySelector('.convoy-item--excavator'),
+        worker: section.querySelector('.convoy-item--worker'),
+      };
+      const convoyRest = { crane: '56%', excavator: '34%', worker: '10%' };
+      const convoyEnter = [
+        { key: 'crane', start: 0.15, duration: 1.1, ease: 'power2.out' },
+        { key: 'excavator', start: 0.3, duration: 1.0, ease: 'power2.out' },
+        { key: 'worker', start: 0.45, duration: 0.85, ease: 'power2.out' },
+      ];
+      convoyEnter.forEach((spec) => {
+        const el = convoyEls[spec.key];
+        if (!el) return;
+        tl.fromTo(el, { left: '-40%' }, { left: convoyRest[spec.key], duration: spec.duration, ease: spec.ease }, spec.start);
+      });
+
+      // Timeline séparée (pas nichée dans tl) : ne joue que lorsqu'on quitte le
+      // chapitre (voir goTo()), pour que les engins repartent par la gauche avant
+      // que la page ne défile vers le chapitre suivant ou précédent.
+      if (convoyEls.crane || convoyEls.excavator || convoyEls.worker) {
+        convoyExitTl = gsap.timeline({ paused: true });
+        const convoyExit = [
+          { key: 'worker', start: 0 },
+          { key: 'excavator', start: 0.08 },
+          { key: 'crane', start: 0.16 },
+        ];
+        convoyExit.forEach((spec) => {
+          const el = convoyEls[spec.key];
+          if (!el) return;
+          convoyExitTl.to(el, { left: '-40%', duration: 0.45, ease: 'power1.in' }, spec.start);
+        });
+      }
+
       items.forEach((item, i) => {
         const side = i === 0 ? 'left' : 'right';
         const panel = buildWipePanel(item, side);
@@ -349,22 +391,35 @@
     if (index === currentIndex || isAnimating) return;
 
     isAnimating = true;
-    currentIndex = index;
-    setActiveDot(index);
-    playWhoosh();
 
-    const proxy = { y: window.scrollY };
-    gsap.to(proxy, {
-      y: targetY(index),
-      duration: 0.9,
-      ease: 'power2.inOut',
-      onUpdate: () => window.scrollTo(0, proxy.y),
-      onComplete: () => {
-        isAnimating = false;
-      },
-    });
+    const runTransition = () => {
+      currentIndex = index;
+      setActiveDot(index);
+      playWhoosh();
 
-    playChapter(index);
+      const proxy = { y: window.scrollY };
+      gsap.to(proxy, {
+        y: targetY(index),
+        duration: 0.9,
+        ease: 'power2.inOut',
+        onUpdate: () => window.scrollTo(0, proxy.y),
+        onComplete: () => {
+          isAnimating = false;
+        },
+      });
+
+      playChapter(index);
+    };
+
+    if (currentIndex === compareIndex && convoyExitTl) {
+      // On quitte le chapitre 3 : les engins repartent par la gauche d'abord,
+      // le défilement vers le chapitre suivant/précédent n'a lieu qu'ensuite.
+      timelines[compareIndex].progress(1);
+      convoyExitTl.eventCallback('onComplete', runTransition);
+      convoyExitTl.restart();
+    } else {
+      runTransition();
+    }
   }
 
   navDots.forEach((dot, i) => {

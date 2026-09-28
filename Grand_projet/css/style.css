@@ -335,6 +335,46 @@ img {
   border-radius: 999px;
 }
 
+/* Convoi de chantier : calque plein écran, par-dessus tout le reste (texte et
+   photos y compris), avec une vraie hiérarchie de tailles. Les engins entrent
+   par la gauche et se posent (js/script.js) ; ils ne repartent (par la gauche
+   aussi) que juste avant de quitter le chapitre, voir goTo(). Masqué par défaut
+   comme .sound-toggle : sans JS personne n'anime leur position. */
+.chantier-convoy {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.convoy-item {
+  position: absolute;
+  display: none;
+  bottom: 0;
+  left: -40%;
+  width: auto;
+  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.6));
+}
+
+.js .convoy-item {
+  display: block;
+}
+
+/* Très grande : domine le premier plan. */
+.convoy-item--crane {
+  height: clamp(230px, min(58vh, 44vw), 540px);
+}
+
+/* Moyenne. */
+.convoy-item--excavator {
+  height: clamp(130px, min(32vh, 30vw), 320px);
+}
+
+/* Toute petite. */
+.convoy-item--worker {
+  height: clamp(50px, min(12vh, 14vw), 120px);
+}
+
 /* Panneau incliné qui balaie chaque photo pour la révéler (js/script.js). */
 .wipe-panel {
   position: absolute;
