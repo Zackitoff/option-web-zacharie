@@ -1,10 +1,12 @@
 :root {
-  --color-bg: #0b0e14;
-  --color-bg-alt: #12161f;
-  --color-text: #f5f5f0;
-  --color-muted: rgba(245, 245, 240, 0.72);
-  --color-accent: #c8102e;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --color-bg: #1b1611;
+  --color-bg-alt: #241d16;
+  --color-text: #f3ede2;
+  --color-muted: rgba(243, 237, 226, 0.68);
+  --color-accent: #ffcc00; /* jaune officiel du HC Ajoie (hc-ajoie.ch) */
+  --color-ink: #000;       /* noir officiel du HC Ajoie, utilisé sur fond jaune */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -24,107 +26,9 @@ body {
   line-height: 1.5;
 }
 
-/* État de départ des éléments animés par GSAP (chapter-content.js les anime ensuite) ;
-   sans JS, .js n'est jamais posée sur <html> donc tout reste visible d'emblée. */
-.js .chapter--2 .chapter-title,
-.js .chapter-text,
-.js .chapter-kicker,
-.js .compare-item figcaption,
-.js .chapter-year,
-.js .chapter-title-line,
-.js .chapter-intro .chapter-title,
-.js .chapter--5 .chapter-title,
-.js .stat-number,
-.js .stat-label {
-  opacity: 0;
-}
-
 img {
   max-width: 100%;
   display: block;
-}
-
-/* --- Navigation par points + interrupteur son (persistants, au-dessus de tout) --- */
-
-.chapter-nav {
-  position: fixed;
-  right: clamp(0.6rem, 2.5vw, 1.35rem);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.1rem;
-  padding: 1rem 0.7rem;
-  border-radius: 999px;
-  background: rgba(11, 14, 20, 0.55);
-  border: 1px solid rgba(245, 245, 240, 0.18);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-}
-
-.chapter-dot {
-  display: block;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  border: 2px solid rgba(245, 245, 240, 0.75);
-  background: rgba(245, 245, 240, 0.15);
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.chapter-dot:hover {
-  border-color: #fff;
-  background: rgba(245, 245, 240, 0.4);
-}
-
-.chapter-dot.is-active {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  transform: scale(1.45);
-  box-shadow: 0 0 14px 2px rgba(200, 16, 46, 0.7);
-}
-
-.chapter-dot:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
-}
-
-.sound-toggle {
-  position: fixed;
-  top: clamp(1rem, 3vw, 1.5rem);
-  right: clamp(1rem, 3vw, 1.5rem);
-  z-index: 20;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 50%;
-  border: 1.5px solid rgba(245, 245, 240, 0.45);
-  background: rgba(11, 14, 20, 0.6);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
-  color: var(--color-text);
-  font-size: 1.2rem;
-  line-height: 1;
-  cursor: pointer;
-  display: none;
-}
-
-.js .sound-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sound-toggle:hover {
-  border-color: var(--color-accent);
-}
-
-.sound-toggle:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 3px;
 }
 
 .sr-only {
@@ -139,294 +43,268 @@ img {
   border: 0;
 }
 
-/* --- Chapitres plein écran (1, 2, 4, 5) --- */
+/* ==========================================================================
+   Le travelling : une scène épinglée (script.js), 5 tableaux superposés qui
+   s'enchaînent en fondu pendant une lente poussée d'échelle (l'effet caméra).
+   Base ci-dessous = flux normal, sans épinglage : c'est le repli utilisé
+   sans JS et sous prefers-reduced-motion (le JS n'ajoute alors jamais la
+   classe .is-active — voir script.js). .is-active est ce qui active
+   l'empilement ; l'accent jaune n'apparaît que dans .frame--beat.
+   ========================================================================== */
 
-.chapter {
+.travelling {
   position: relative;
-  height: 100vh;
-  height: 100svh;
-  display: flex;
-  align-items: flex-end;
-  overflow: hidden;
-  isolation: isolate;
+  background: var(--color-bg);
 }
 
-.chapter-bg {
+.travelling.is-active {
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.frame {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  isolation: isolate; /* chaque tableau a son propre empilement photo/dégradé/légende */
+}
+
+.is-active .frame {
+  position: absolute;
+  inset: 0;
+}
+
+.frame--right {
+  justify-content: flex-end;
+}
+
+.frame-photo {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 0;
+  will-change: opacity, transform;
 }
 
-.chapter--sepia .chapter-bg {
-  filter: sepia(0.55) saturate(0.7) contrast(1.05) brightness(0.95);
+/* État de départ avant que le timeline ne prenne la main : seul le 1er
+   tableau est visible. Volontairement accroché à .is-active (et non au
+   simple .js) : .is-active n'est ajoutée qu'au moment exact où script.js
+   construit le timeline avec ses propres opacités de départ identiques —
+   donc jamais de fenêtre où un tableau serait masqué par le CSS sans que
+   le JS ait encore pris le relais. Sans JS, en repli (motion réduite, ou
+   GSAP/ScrollTrigger indisponible), .is-active n'est jamais posée : tout
+   reste visible d'emblée.
+   L'opacité se pilote sur .frame ENTIÈRE (pas sur la photo et la légende
+   séparément) : chaque carte a son propre ::after (le dégradé), qui n'est
+   sinon jamais masqué — 5 cartes superposées avec leur dégradé chacune
+   allumé en permanence s'additionnaient et assombrissaient tout. En posant
+   l'opacité sur .frame, la photo, le dégradé ET la légende disparaissent
+   ensemble comme un seul bloc, impossible à désynchroniser. */
+.is-active .frame {
+  opacity: 0;
 }
 
-.chapter:not(.chapter--compare)::after {
+.is-active .frame:first-child {
+  opacity: 1;
+}
+
+.frame--sepia .frame-photo {
+  filter: sepia(0.5) saturate(0.65) contrast(1.05);
+}
+
+.frame--warm .frame-photo {
+  filter: sepia(0.15) saturate(0.85);
+}
+
+.frame::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, rgba(6, 8, 12, 0.85), rgba(6, 8, 12, 0.35) 50%, rgba(6, 8, 12, 0) 80%);
   pointer-events: none;
+  background: linear-gradient(to top, rgba(8, 6, 4, 0.92), rgba(8, 6, 4, 0.6) 20%, rgba(8, 6, 4, 0) 48%);
 }
 
-.chapter-content {
+.frame-caption {
   position: relative;
   z-index: 2;
   padding: clamp(1.5rem, 5vw, 4rem);
   max-width: 42rem;
+  /* Filet de lisibilité indépendant du dégradé : le texte reste net même si
+     la photo derrière est claire à cet endroit précis. */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 4px 18px rgba(0, 0, 0, 0.5);
 }
 
-.chapter-title {
-  font-size: clamp(2.25rem, 7.5vw, 5rem);
-  line-height: 1.08;
+.frame--right .frame-caption {
+  text-align: right;
+}
+
+.frame-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  line-height: 1.1;
+  font-weight: 600;
   margin: 0 0 0.75rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
 }
 
-/* Signature graphique répétée en tête de chaque chapitre (esprit typo suisse). */
+/* Signature graphique répétée en tête de chaque tableau ; neutre par défaut,
+   jaune uniquement sur les 3 temps forts du récit (.frame--beat). */
 .title-mark {
   display: block;
   width: 3.5rem;
   height: 5px;
   margin-bottom: 0.85rem;
-  background: var(--color-accent);
+  background: var(--color-muted);
   transform-origin: left center;
 }
 
-/* Chapitre 1 : l'année en gros caractère, la suite du titre en dessous, mot par mot (js). */
-.chapter-year {
-  display: block;
-  font-size: clamp(3.5rem, 15vw, 9rem);
-  font-weight: 800;
-  line-height: 0.85;
-  letter-spacing: -0.02em;
-}
-
-.chapter-title-line {
-  display: block;
-  font-size: clamp(1.5rem, 4.5vw, 2.75rem);
-  font-weight: 600;
-  margin-top: 0.25rem;
-}
-
-/* Mots individuels d'un titre "éclaté" pour une révélation mot par mot (js/script.js). */
-.word {
-  display: inline-block;
-}
-
-/* Chapitre 4 : le chiffre en très grand format, façon tableau d'affichage. */
-.chapter-title--stat {
-  margin-bottom: 0.5rem;
-}
-
-.stat-number {
-  display: block;
-  font-size: clamp(4.5rem, 19vw, 11rem);
-  font-weight: 800;
-  line-height: 0.85;
-  letter-spacing: -0.03em;
-  color: var(--color-accent);
-}
-
-.stat-label {
-  display: block;
-  font-size: clamp(1.25rem, 3.5vw, 2rem);
-  font-weight: 600;
-  margin-top: 0.35rem;
-  color: var(--color-text);
-}
-
-/* Barre qui se remplit en même temps que le compteur, pour donner du poids au chiffre. */
-.stat-bar {
-  width: min(100%, 20rem);
-  height: 6px;
-  background: rgba(245, 245, 240, 0.15);
-  border-radius: 999px;
-  overflow: hidden;
-  margin: 0.6rem 0 1rem;
-}
-
-.stat-bar-fill {
-  width: 100%;
-  height: 100%;
+.frame--beat .title-mark {
   background: var(--color-accent);
-  transform: scaleX(0);
-  transform-origin: left center;
 }
 
-.chapter-kicker {
-  font-size: 0.95rem;
+.frame-year {
+  display: block;
+  font-size: clamp(3.5rem, 13vw, 8rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.01em;
+}
+
+.frame-kicker {
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-muted);
   margin: 0 0 0.5rem;
 }
 
-.chapter-text {
+.frame-text {
   font-size: clamp(1rem, 2vw, 1.15rem);
   color: var(--color-muted);
   max-width: 38ch;
   margin: 0;
 }
 
-.counter {
+/* Petit tampon jaune/noir, pour "2×OUI" et "à guichets fermés". */
+.tag {
+  display: inline-block;
+  background: var(--color-accent);
+  color: var(--color-ink);
+  font-weight: 700;
+  padding: 0.05em 0.4em;
+  border-radius: 0.15em;
+}
+
+.frame-title--stat {
+  margin-bottom: 0.5rem;
+}
+
+.frame-stat {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 9vw, 6rem);
+  font-weight: 900;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
   color: var(--color-accent);
+}
+
+.counter {
   font-variant-numeric: tabular-nums;
 }
 
-/* --- Chapitre 3 — comparaison avant/pendant --- */
-
-.chapter--compare {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: clamp(1rem, 3vw, 2rem);
-  padding: clamp(1.25rem, 4vw, 3rem) clamp(1.25rem, 5vw, 4rem);
-  background: var(--color-bg-alt);
+.frame-stat-label {
+  display: block;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  font-weight: 500;
+  margin-top: 0.35rem;
 }
 
-.chapter-intro {
-  max-width: 42rem;
+.stat-rule {
+  display: block;
+  width: min(100%, 16rem);
+  height: 2px;
+  background: var(--color-accent);
+  margin: 0.6rem 0 1rem;
 }
 
-/* Plus compact que les titres plein écran : cette section partage l'écran avec 2 photos. */
-.chapter-intro .chapter-title {
-  font-size: clamp(2rem, 6vw, 3.5rem);
-}
+/* ---- Repères d'années qui dérivent pendant le long palier sur 1973 ---- */
 
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(0.5rem, 2vw, 1.25rem);
-}
-
-.compare-item {
-  position: relative;
-  margin: 0;
-  height: clamp(160px, 38svh, 420px);
-  overflow: hidden;
-  border-radius: 0.5rem;
-  background: #1a1f2b;
-}
-
-.compare-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.compare-item figcaption {
+.year-drift {
   position: absolute;
-  left: 0.75rem;
-  bottom: 0.75rem;
-  z-index: 2;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-}
-
-/* Convoi de chantier : calque plein écran, par-dessus tout le reste (texte et
-   photos y compris), avec une vraie hiérarchie de tailles. Les engins entrent
-   par la gauche et se posent (js/script.js) ; ils ne repartent (par la gauche
-   aussi) que juste avant de quitter le chapitre, voir goTo(). Masqué par défaut
-   comme .sound-toggle : sans JS personne n'anime leur position. */
-.chantier-convoy {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
+  left: clamp(1.5rem, 6vw, 5rem);
+  top: 50%;
+  z-index: 3;
+  display: none;
   pointer-events: none;
 }
 
-.convoy-item {
-  position: absolute;
-  display: none;
-  bottom: 0;
-  left: -40%;
-  width: auto;
-  filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.6));
-}
-
-.js .convoy-item {
+.js .year-drift {
   display: block;
 }
 
-/* Très grande : domine le premier plan. */
-.convoy-item--crane {
-  height: clamp(230px, min(58vh, 44vw), 540px);
-}
-
-/* Moyenne. */
-.convoy-item--excavator {
-  height: clamp(130px, min(32vh, 30vw), 320px);
-}
-
-/* Toute petite. */
-.convoy-item--worker {
-  height: clamp(50px, min(12vh, 14vw), 120px);
-}
-
-/* Panneau incliné qui balaie chaque photo pour la révéler (js/script.js). */
-.wipe-panel {
+.year-drift-mark {
   position: absolute;
-  inset: -20% -30%;
-  z-index: 1;
-  background: var(--color-bg);
-  pointer-events: none;
-  will-change: transform;
-}
-
-.wipe-panel::after {
-  content: "";
-  position: absolute;
+  left: 0;
   top: 0;
-  bottom: 0;
-  width: 5px;
-  background: var(--color-accent);
-  box-shadow: 0 0 24px 3px var(--color-accent), 0 0 6px 1px #fff;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  opacity: 0;
 }
 
-.wipe-panel--left::after {
-  right: -2px;
+/* ---- Repère de progression (remplace l'ancienne nav à points) ---- */
+
+.timeline-rail {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  top: 14%;
+  bottom: 14%;
+  width: 1px;
+  z-index: 5;
+  display: none;
 }
 
-.wipe-panel--right::after {
-  left: -2px;
+.js .timeline-rail {
+  display: block;
 }
 
-@media (max-width: 680px) {
-  .compare-grid {
-    grid-template-columns: 1fr;
-  }
-
-  /* Empilées, les 2 photos doivent quand même tenir sur un seul écran (pagination). */
-  .compare-item {
-    height: clamp(110px, 22svh, 280px);
-  }
+.timeline-rail-track {
+  position: absolute;
+  inset: 0;
+  background: rgba(243, 237, 226, 0.18);
 }
 
-/* --- Pagination plein écran : un scroll = un chapitre (voir js/script.js) ---
-   Sous prefers-reduced-motion, on désactive la capture du scroll côté JS ET on repasse
-   les sections en hauteur libre ici, pour ne jamais rogner du contenu (zoom texte, etc.). */
-@media (prefers-reduced-motion: reduce) {
-  .chapter {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100svh;
-    overflow: visible;
-  }
+.timeline-rail-marker {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 7px;
+  height: 7px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: var(--color-text);
 }
 
-/* --- Crédits --- */
+.timeline-rail-year {
+  position: absolute;
+  right: 0.85rem;
+  top: 0;
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+/* ---- Crédits ---- */
 
 .credits {
   background: var(--color-bg-alt);

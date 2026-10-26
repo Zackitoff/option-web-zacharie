@@ -7,128 +7,124 @@
   <title>Du Voyebœuf à la Raiffeisen Arena — récit d'une reconstruction</title>
   <meta name="description" content="Avant, une patinoire vétuste de 1973 menaçait de ne plus répondre aux normes ; la population a voté sa reconstruction ; aujourd'hui la Raiffeisen Arena fait vivre le HC Ajoie en National League devant 5178 supporters.">
   <script>document.documentElement.classList.add('js');</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <noscript>
     <style>
-      .chapter { height: auto !important; min-height: 100vh; min-height: 100svh; overflow: visible !important; }
+      .frame { position: relative !important; }
+      .frame-photo, .frame-caption { opacity: 1 !important; }
     </style>
   </noscript>
 </head>
 <body>
   <h1 class="sr-only">Du Voyebœuf à la Raiffeisen Arena : le récit d'une reconstruction</h1>
 
-  <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="false" aria-label="Activer le son">🔇</button>
-
-  <nav class="chapter-nav" aria-label="Navigation des chapitres">
-    <a class="chapter-dot" href="#chapitre-1" data-index="0" aria-label="Chapitre 1 : 1973"></a>
-    <a class="chapter-dot" href="#chapitre-2" data-index="1" aria-label="Chapitre 2 : le vote de 2018"></a>
-    <a class="chapter-dot" href="#chapitre-3" data-index="2" aria-label="Chapitre 3 : la démolition, 2019–2020"></a>
-    <a class="chapter-dot" href="#chapitre-4" data-index="3" aria-label="Chapitre 4 : la Raiffeisen Arena, 2022"></a>
-    <a class="chapter-dot" href="#chapitre-5" data-index="4" aria-label="Chapitre 5 : aujourd'hui"></a>
-  </nav>
-
   <main>
-    <!-- Chapitre 1 — 1973, aucun mouvement (photo figée, désaturée) -->
-    <section class="chapter chapter--1 chapter--sepia" id="chapitre-1">
-      <img
-        class="chapter-bg"
-        src="images/voyeboeuf-exterieur-1973.jpg"
-        alt="Vue extérieure de la patinoire couverte du Voyebœuf à Porrentruy, peu après son ouverture en 1973."
-        loading="eager"
-        fetchpriority="high"
-        decoding="async">
-      <div class="chapter-content">
-        <span class="title-mark" aria-hidden="true"></span>
-        <h2 class="chapter-title">
-          <span class="chapter-year">1973</span>
-          <span class="chapter-title-line">Le Voyebœuf ouvre ses portes</span>
-        </h2>
-        <p class="chapter-text">Construite à Porrentruy, la patinoire couverte devient vite un lieu de rassemblement : les délégués du Rassemblement jurassien s'y réunissent encore en 1974.</p>
-      </div>
-    </section>
+    <div class="travelling" id="travelling">
 
-    <!-- Chapitre 2 — le vote : "2×OUI" glisse et apparaît une seule fois au scroll -->
-    <section class="chapter chapter--2" id="chapitre-2">
-      <img
-        class="chapter-bg"
-        src="images/voyeboeuf-interieur-2014.jpg"
-        alt="Intérieur de la patinoire du Voyebœuf en 2014, gradins combles lors d'un match de Coupe de Suisse HC Ajoie – Genève-Servette."
-        loading="lazy"
-        decoding="async">
-      <div class="chapter-content">
-        <span class="title-mark" aria-hidden="true"></span>
-        <p class="chapter-kicker">Le chaudron, usé mais aimé</p>
-        <h2 class="chapter-title">1<sup>er</sup> juillet 2018 — 2×OUI</h2>
-        <p class="chapter-text">Devenue vétuste et hors normes, l'enceinte reste pourtant chère aux Ajoulots. La population vote massivement le crédit de rénovation : une décision collective, pas un choix imposé.</p>
-      </div>
-    </section>
+      <!-- 1973 : déjà visible au chargement, aucune animation d'entrée (voir CSS + script.js). -->
+      <section class="frame frame--sepia" data-year="1973">
+        <img
+          class="frame-photo"
+          src="images/voyeboeuf-exterieur-1973.jpg"
+          alt="Vue extérieure de la patinoire couverte du Voyebœuf à Porrentruy, peu après son ouverture en 1973."
+          loading="eager"
+          fetchpriority="high"
+          decoding="async">
+        <div class="frame-caption">
+          <span class="title-mark" aria-hidden="true"></span>
+          <h2 class="frame-title">
+            <span class="frame-year">1973</span>
+            Le Voyebœuf ouvre ses portes
+          </h2>
+          <p class="frame-text">Construite à Porrentruy, la patinoire couverte devient vite un lieu de rassemblement : les délégués du Rassemblement jurassien s'y réunissent encore en 1974.</p>
+        </div>
+      </section>
 
-    <!-- Chapitre 3 — comparaison avant/pendant, fondu déclenché une seule fois (pas de scrub) -->
-    <section class="chapter chapter--compare" id="chapitre-3">
-      <div class="chapter-intro">
-        <span class="title-mark" aria-hidden="true"></span>
-        <h2 class="chapter-title">2019–2020 — Le Voyebœuf disparaît</h2>
-        <p class="chapter-text">Pièce par pièce, l'ancienne structure est démontée pour laisser place au nouveau bâtiment. Ce qui existait depuis 1973 a vraiment disparu.</p>
-      </div>
-      <div class="chantier-convoy" aria-hidden="true">
-        <img class="convoy-item convoy-item--crane" src="images/grue.png" alt="">
-        <img class="convoy-item convoy-item--excavator" src="images/machine.png" alt="">
-        <img class="convoy-item convoy-item--worker" src="images/ouvrier.webp" alt="">
-      </div>
-      <div class="compare-grid">
-        <figure class="compare-item">
-          <img
-            src="images/voyeboeuf-exterieur-1973.jpg"
-            alt="Vue extérieure de la patinoire couverte du Voyebœuf à Porrentruy, peu après son ouverture en 1973."
-            loading="lazy"
-            decoding="async">
-          <figcaption>Avant</figcaption>
-        </figure>
-        <figure class="compare-item">
-          <img
-            src="images/chantier-2019-2020.jpg"
-            alt="Chantier de démolition et reconstruction de la patinoire du Voyebœuf entre 2019 et 2020."
-            loading="lazy"
-            decoding="async">
-          <figcaption>Pendant</figcaption>
-        </figure>
-      </div>
-    </section>
+      <!-- 2018 : le vote. Un des 3 "temps forts" (jaune HC Ajoie). -->
+      <section class="frame frame--warm frame--beat frame--right" data-year="2018">
+        <img
+          class="frame-photo"
+          src="images/voyeboeuf-interieur-2014.jpg"
+          alt="Intérieur de la patinoire du Voyebœuf en 2014, gradins combles lors d'un match de Coupe de Suisse HC Ajoie – Genève-Servette."
+          loading="eager"
+          decoding="async">
+        <div class="frame-caption">
+          <span class="title-mark" aria-hidden="true"></span>
+          <p class="frame-kicker">Le chaudron, usé mais aimé</p>
+          <h2 class="frame-title">1<sup>er</sup> juillet 2018 — <span class="tag">2×OUI</span></h2>
+          <p class="frame-text">Devenue vétuste et hors normes, l'enceinte reste pourtant chère aux Ajoulots. La population vote massivement le crédit de rénovation : une décision collective, pas un choix imposé.</p>
+        </div>
+      </section>
 
-    <!-- Chapitre 4 — compteur 0 → 5178 déclenché une seule fois au scroll -->
-    <section class="chapter chapter--4" id="chapitre-4">
-      <img
-        class="chapter-bg"
-        src="images/raiffeisen-arena-2022.jpg"
-        alt="La Raiffeisen Arena, nouvelle patinoire de Porrentruy inaugurée en 2022."
-        loading="lazy"
-        decoding="async">
-      <div class="chapter-content">
-        <span class="title-mark" aria-hidden="true"></span>
-        <h2 class="chapter-title chapter-title--stat">
-          <span class="stat-number" aria-hidden="true"><span class="counter" data-target="5178">0</span></span>
-          <span class="stat-label" aria-hidden="true">places. National League.</span>
-          <span class="sr-only">5178 places. National League.</span>
-        </h2>
-        <div class="stat-bar" aria-hidden="true"><div class="stat-bar-fill"></div></div>
-        <p class="chapter-text">En 2022, la Raiffeisen Arena est inaugurée. Le pari collectif est réussi : le HC Ajoie est promu en National League.</p>
-      </div>
-    </section>
+      <!-- 2019–2020 : le chantier, une carte comme les autres (plus de convoi d'engins animés). -->
+      <section class="frame" data-year="2019–2020">
+        <img
+          class="frame-photo"
+          src="images/chantier-2019-2020.jpg"
+          alt="Chantier de démolition et reconstruction de la patinoire du Voyebœuf entre 2019 et 2020."
+          loading="eager"
+          decoding="async">
+        <div class="frame-caption">
+          <span class="title-mark" aria-hidden="true"></span>
+          <h2 class="frame-title">2019–2020 — Le Voyebœuf disparaît</h2>
+          <p class="frame-text">Pièce par pièce, l'ancienne structure est démontée pour laisser place au nouveau bâtiment. Ce qui existait depuis 1973 a vraiment disparu.</p>
+        </div>
+      </section>
 
-    <!-- Chapitre 5 — statique, aucune animation (zoom parallax retiré, cf. sobre.md) -->
-    <section class="chapter chapter--5" id="chapitre-5">
-      <img
-        class="chapter-bg"
-        src="images/match-national-league-aujourdhui.jpg"
-        alt="Match du HC Ajoie en National League dans une Raiffeisen Arena à guichets fermés."
-        loading="lazy"
-        decoding="async">
-      <div class="chapter-content">
-        <span class="title-mark" aria-hidden="true"></span>
-        <h2 class="chapter-title">Aujourd'hui, l'Ajoie joue à guichets fermés</h2>
-        <p class="chapter-text">Le HC Ajoie joue désormais à guichets fermés dans une arena moderne : le lieu a retrouvé — et dépassé — sa place dans la communauté.</p>
+      <!-- 2022 : l'inauguration et les 5178 places. 2e temps fort. -->
+      <section class="frame frame--beat frame--right" data-year="2022">
+        <img
+          class="frame-photo"
+          src="images/raiffeisen-arena-2022.jpg"
+          alt="La Raiffeisen Arena, nouvelle patinoire de Porrentruy inaugurée en 2022."
+          loading="eager"
+          decoding="async">
+        <div class="frame-caption">
+          <span class="title-mark" aria-hidden="true"></span>
+          <h2 class="frame-title frame-title--stat">
+            <span class="frame-stat" aria-hidden="true"><span class="counter" data-target="5178">0</span></span>
+            <span class="frame-stat-label" aria-hidden="true">places. National League.</span>
+            <span class="sr-only">5178 places. National League.</span>
+          </h2>
+          <span class="stat-rule" aria-hidden="true"></span>
+          <p class="frame-text">En 2022, la Raiffeisen Arena est inaugurée. Le pari collectif est réussi : le HC Ajoie est promu en National League.</p>
+        </div>
+      </section>
+
+      <!-- Aujourd'hui : reste affichée à la fin, 3e temps fort. -->
+      <section class="frame frame--beat" data-year="Aujourd'hui">
+        <img
+          class="frame-photo"
+          src="images/match-national-league-aujourdhui.jpg"
+          alt="Match du HC Ajoie en National League dans une Raiffeisen Arena à guichets fermés."
+          loading="eager"
+          decoding="async">
+        <div class="frame-caption">
+          <span class="title-mark" aria-hidden="true"></span>
+          <h2 class="frame-title">Aujourd'hui, l'Ajoie joue <span class="tag">à guichets fermés</span></h2>
+          <p class="frame-text">Le HC Ajoie joue désormais à guichets fermés dans une arena moderne : le lieu a retrouvé — et dépassé — sa place dans la communauté.</p>
+        </div>
+      </section>
+
+      <!-- Repères d'années qui dérivent lentement pendant le long palier 1973 (voir script.js). -->
+      <div class="year-drift" aria-hidden="true">
+        <span class="year-drift-mark">1980</span>
+        <span class="year-drift-mark">1990</span>
+        <span class="year-drift-mark">2000</span>
+        <span class="year-drift-mark">2010</span>
       </div>
-    </section>
+
+      <!-- Repère de progression décoratif : remplace l'ancienne nav à points. -->
+      <div class="timeline-rail" aria-hidden="true">
+        <span class="timeline-rail-track"></span>
+        <span class="timeline-rail-marker"></span>
+        <p class="timeline-rail-year">1973</p>
+      </div>
+
+    </div>
   </main>
 
   <footer class="credits">
@@ -144,6 +140,7 @@
   </footer>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
   <script src="js/script.js" defer></script>
 </body>
 </html>
