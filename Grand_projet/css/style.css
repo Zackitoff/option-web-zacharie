@@ -5,6 +5,8 @@
   --color-muted: rgba(243, 237, 226, 0.68);
   --color-accent: #ffcc00; /* jaune officiel du HC Ajoie (hc-ajoie.ch) */
   --color-ink: #000;       /* noir officiel du HC Ajoie, utilisé sur fond jaune */
+  /* Halo sombre derrière tout texte posé sur une photo : lisible même sur un ciel clair. */
+  --text-halo: 0 1px 3px rgba(0, 0, 0, 0.85), 0 4px 18px rgba(0, 0, 0, 0.5);
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -91,10 +93,10 @@ img {
   will-change: opacity, transform;
 }
 
-/* État de départ avant que le timeline ne prenne la main : seul le 1er
+/* État de départ avant que la timeline ne prenne la main : seul le 1er
    tableau est visible. Volontairement accroché à .is-active (et non au
    simple .js) : .is-active n'est ajoutée qu'au moment exact où script.js
-   construit le timeline avec ses propres opacités de départ identiques —
+   construit la timeline avec ses propres opacités de départ identiques —
    donc jamais de fenêtre où un tableau serait masqué par le CSS sans que
    le JS ait encore pris le relais. Sans JS, en repli (motion réduite, ou
    GSAP/ScrollTrigger indisponible), .is-active n'est jamais posée : tout
@@ -113,8 +115,25 @@ img {
   opacity: 1;
 }
 
+/* Une carte transparente reste lue par les lecteurs d'écran (c'est voulu : tout le récit
+   reste accessible), mais son seul élément interactif — le bouton du dernier tableau —
+   serait cliquable et atteignable au clavier alors qu'on ne le voit pas. On ne le cache
+   donc que lui, avec autoAlpha côté JS (opacity + visibility). */
+.is-active .frame-actions {
+  visibility: hidden;
+}
+
+/* 1973 : la photo vieillit pendant le scroll. script.js fait passer --age de 0 (la photo
+   neuve, teinte sépia) à 1 (noir et blanc, terne, sombre) ; c'est ici qu'on décide à quoi
+   ressemble chaque bout. Sans animation, --age reste à 0 : la photo garde sa teinte sépia. */
 .frame--sepia .frame-photo {
-  filter: sepia(0.5) saturate(0.65) contrast(1.05);
+  --age: 0;
+  filter:
+    sepia(calc(0.5 * (1 - var(--age))))
+    saturate(0.65)
+    contrast(calc(1.05 - 0.2 * var(--age)))
+    grayscale(var(--age))
+    brightness(calc(1 - 0.55 * var(--age)));
 }
 
 .frame--warm .frame-photo {
@@ -130,18 +149,32 @@ img {
   background: linear-gradient(to top, rgba(8, 6, 4, 0.92), rgba(8, 6, 4, 0.6) 20%, rgba(8, 6, 4, 0) 48%);
 }
 
+/* Une légende plus haute (ici avec le bouton) monte plus loin dans la photo :
+   le dégradé de lisibilité doit monter avec elle. */
+.frame--cta::after {
+  background: linear-gradient(to top, rgba(8, 6, 4, 0.92), rgba(8, 6, 4, 0.72) 30%, rgba(8, 6, 4, 0) 62%);
+}
+
 .frame-caption {
   position: relative;
   z-index: 2;
   padding: clamp(1.5rem, 5vw, 4rem);
   max-width: 42rem;
-  /* Filet de lisibilité indépendant du dégradé : le texte reste net même si
-     la photo derrière est claire à cet endroit précis. */
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85), 0 4px 18px rgba(0, 0, 0, 0.5);
+  text-shadow: var(--text-halo);
 }
 
+/* Légende à droite : on garde une marge plus large de ce côté pour ne pas passer
+   sous la frise d'années (.timeline-rail), collée au bord droit de l'écran. */
 .frame--right .frame-caption {
   text-align: right;
+  padding-right: clamp(6rem, 12vw, 8.5rem);
+}
+
+/* Les traits décoratifs (blocs, pas du texte) restent collés au bord gauche
+   si on ne les pousse pas : on les aligne à droite comme le reste de la légende. */
+.frame--right .title-mark,
+.frame--right .stat-rule {
+  margin-left: auto;
 }
 
 .frame-title {
@@ -233,18 +266,367 @@ img {
   margin: 0.6rem 0 1rem;
 }
 
+/* Bouton d'action (dernier tableau) : même langage que .tag, jaune sur noir. */
+.frame-actions {
+  margin: 1.75rem 0 0;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.85em 1.4em;
+  background: var(--color-accent);
+  color: var(--color-ink);
+  font-weight: 700;
+  text-decoration: none;
+  text-shadow: none; /* sinon le halo de la légende salit le texte noir sur jaune */
+  border-radius: 0.2em;
+  transition: transform 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.button-arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.button:hover .button-arrow {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   Chapitre du chantier : des engins révèlent les photos sur leur passage.
+   Les photos (.chantier-layer) s'empilent. Chaque photo après la 1re est masquée
+   par un dégradé dont le bord (--edge, en px) est piloté par script.js pour suivre
+   un engin : à gauche du bord on voit encore la photo d'avant, à droite la nouvelle.
+   Sans JS (ou motion réduite) : on ne garde que la photo "--main", sans engins.
+   ========================================================================== */
+
+/* Légende en haut : le bas de l'écran est la piste des engins. Le dégradé de
+   lisibilité passe donc en haut lui aussi. */
+.frame--chantier {
+  align-items: flex-start;
+}
+
+.frame--chantier::after {
+  background: linear-gradient(to bottom, rgba(8, 6, 4, 0.92), rgba(8, 6, 4, 0.6) 20%, rgba(8, 6, 4, 0) 48%);
+}
+
+.chantier-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chantier-layer--warm {
+  filter: sepia(0.15) saturate(0.85); /* comme la carte 2018, dont c'est la photo */
+}
+
+.is-active .chantier-layer + .chantier-layer {
+  --edge: 99999; /* hors champ à droite tant que le script ne l'a pas posé */
+  --reveal: linear-gradient(to right, transparent calc(var(--edge) * 1px - 6vw), #000 calc(var(--edge) * 1px));
+  -webkit-mask-image: var(--reveal);
+  mask-image: var(--reveal);
+}
+
+.chantier-engin,
+.chantier-ouvrier {
+  position: absolute;
+  max-width: none;
+  height: auto;
+  aspect-ratio: 1; /* la taille est connue avant le chargement de l'image */
+  pointer-events: none;
+}
+
+/* Les engins démarrent juste hors champ à droite ; script.js les fait traverser. */
+.chantier-engin {
+  left: 100%;
+  bottom: -3vh;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.5));
+}
+
+/* Sur l'image d'origine la pelleteuse regarde vers la droite : on la retourne
+   pour qu'elle avance vers la gauche, bras en avant. */
+.chantier-engin--pelleteuse {
+  width: clamp(190px, 42vw, 52vh); /* 42 % de la largeur, bornée par la hauteur ; plancher pour les petits écrans */
+  transform: scaleX(-1);
+}
+
+.chantier-engin--grue {
+  width: clamp(150px, 36vw, min(46vh, 480px)); /* grue.png fait 360 px : on évite de trop l'agrandir */
+}
+
+/* L'ouvrier monte du bord bas à la fin du chapitre (script.js), en bas à gauche. */
+.chantier-ouvrier {
+  left: 4%;
+  bottom: -1vh;
+  width: clamp(110px, 24vw, min(30vh, 320px));
+}
+
+.travelling:not(.is-active) .chantier-engin,
+.travelling:not(.is-active) .chantier-ouvrier,
+.travelling:not(.is-active) .chantier-layer:not(.chantier-layer--main) {
+  display: none;
+}
+
+/* ==========================================================================
+   Chapitre de la finale 2020 : le récit d'un joueur, en "temps" qui se succèdent.
+   Pas de photo au départ, une scène sombre où la parole fait tout : .finale-scene
+   empile tous les temps (.finale-temps) dans la même case d'une grille, script.js les
+   fait apparaître et disparaître d'après leurs data-from / data-to. La photo arrive au
+   coup de sifflet final. Sans JS (ou motion réduite) : tout s'affiche, l'un sous l'autre.
+   ========================================================================== */
+
+.frame--finale {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 38%, #2b2218 0%, var(--color-bg) 72%);
+}
+
+/* La légende fait ici office de scène : pleine largeur, centrée, assez de marge de
+   chaque côté pour ne jamais passer sous la frise d'années. */
+.finale-scene {
+  width: 100%;
+  max-width: none;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1.25rem, 12vw, 8.5rem);
+}
+
+.finale-temps {
+  max-width: 34rem;
+  margin: 0 auto clamp(2rem, 6vw, 3.5rem);
+}
+
+.is-active .finale-scene {
+  display: grid;
+  height: 100%;
+  align-items: center;
+  justify-items: center;
+}
+
+/* Tous les temps dans la même case : un seul est visible à la fois. */
+.is-active .finale-temps {
+  grid-area: 1 / 1;
+  width: 100%;
+  margin: 0;
+}
+
+/* Au départ seul le 1er temps (celui sans data-from) est visible : les autres sont
+   amenés par la timeline. Pour les lignes qui s'ajoutent dans un temps, idem. */
+.is-active .finale-scene [data-from] {
+  opacity: 0;
+}
+
+.finale-temps .frame-text + .frame-text {
+  margin-top: 0.8em;
+}
+
+.finale-quote {
+  margin-block: 0;
+}
+
+.finale-citation {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.4rem, 3.4vw, 2.3rem);
+  line-height: 1.28;
+}
+
+/* Grand guillemet jaune au-dessus de chaque citation. */
+.finale-citation::before {
+  content: "«";
+  display: block;
+  font-size: 2.4em;
+  line-height: 0.7;
+  margin-bottom: 0.1em;
+  color: var(--color-accent);
+}
+
+.finale-citation p {
+  margin: 0 0 0.8em;
+}
+
+/* L'anecdote compte quatre répliques : un corps plus petit pour qu'elle tienne dans l'écran. */
+.finale-quote--long .finale-citation {
+  font-size: clamp(1.15rem, 2.6vw, 1.85rem);
+}
+
+.finale-quote--long .finale-citation p {
+  margin-bottom: 0.65em;
+}
+
+.finale-ligne--accent {
+  color: var(--color-accent);
+}
+
+/* Le mot "tremble" est secoué par script.js ; il lui faut un bloc pour se déplacer. */
+.finale-tremble {
+  display: inline-block;
+}
+
+.finale-auteur {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.finale-auteur::before {
+  content: "— ";
+}
+
+/* Le résultat, en bas de l'écran, sous la photo. */
+.is-active .finale-temps--resultat {
+  align-self: end;
+  text-align: center;
+}
+
+.finale-temps--resultat .frame-text {
+  margin-inline: auto;
+}
+
+.finale-score {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0 0 0.4rem;
+}
+
+.finale-chiffres {
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 8vw, 4.75rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--color-accent);
+}
+
+.finale-equipe {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.finale-quote--fin {
+  margin-top: 1.4rem;
+}
+
+.finale-quote--fin .finale-citation {
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+}
+
+.finale-quote--fin .finale-citation::before {
+  display: none;
+}
+
+.finale-quote--fin .finale-auteur {
+  margin-top: 0.6rem;
+}
+
+/* Le résultat et la dernière phrase se lisent sur des photos très chargées (foule, maillots) :
+   le dégradé de lisibilité monte plus haut que d'habitude. */
+.frame--finale::after {
+  background: linear-gradient(to top, rgba(8, 6, 4, 0.94), rgba(8, 6, 4, 0.78) 32%, rgba(8, 6, 4, 0) 68%);
+}
+
+/* Les photos — repli (sans JS) : la 1re seulement, comme une image ordinaire à la suite du texte. */
+.frame--finale .frame-photo {
+  position: static;
+  width: min(86vw, 700px);
+  height: auto;
+  margin: 0 auto clamp(2rem, 6vw, 3.5rem);
+}
+
+.finale-layer {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.travelling:not(.is-active) .finale-layer[data-at] {
+  display: none;
+}
+
+/* Les photos — avec la timeline : elles se superposent plein écran. Tout le bloc est invisible
+   au départ (script.js allume la 1re au coup de sifflet final, data-reveal) ; les suivantes
+   (data-at) le sont aussi, et la recouvrent en fondu quand leur heure arrive. */
+.is-active .frame--finale .frame-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+}
+
+.is-active .finale-layer {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+}
+
+.is-active .finale-layer--equipe {
+  object-position: 50% 40%;
+}
+
+.is-active .finale-layer[data-at] {
+  opacity: 0;
+}
+
+/* L'affiche (la 3e photo ne fait que 640 px : trop petite pour le plein écran) : une copie
+   floutée remplit l'écran, la photo nette est posée dessus à sa taille, en haut — le bas
+   est pour le texte. */
+.finale-fond {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  max-width: none;
+  object-fit: cover;
+  filter: blur(24px) brightness(0.5) saturate(1.2);
+}
+
+.finale-affiche {
+  position: absolute;
+  left: 50%;
+  top: 8%; /* la poussée de caméra agrandit tout de 12 % depuis le centre : on garde de la marge en haut */
+  width: min(86vw, 480px, 44vh);
+  max-width: none;
+  height: auto;
+  transform: translateX(-50%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
 /* ---- Repères d'années qui dérivent pendant le long palier sur 1973 ---- */
 
+/* Haut de l'écran, aligné sur la légende : la moitié basse est réservée au titre
+   et au texte, un repère au milieu viendrait se superposer au gros "1973". */
 .year-drift {
   position: absolute;
-  left: clamp(1.5rem, 6vw, 5rem);
-  top: 50%;
+  left: clamp(1.5rem, 5vw, 4rem);
+  top: 24%;
   z-index: 3;
   display: none;
   pointer-events: none;
 }
 
-.js .year-drift {
+.is-active .year-drift {
   display: block;
 }
 
@@ -253,9 +635,12 @@ img {
   left: 0;
   top: 0;
   transform: translateY(-50%);
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  color: var(--color-muted);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  text-shadow: var(--text-halo);
   opacity: 0;
 }
 
@@ -269,39 +654,53 @@ img {
   width: 1px;
   z-index: 5;
   display: none;
+  pointer-events: none;
 }
 
-.js .timeline-rail {
+.is-active .timeline-rail {
   display: block;
 }
 
+/* Trait crème cerné d'un fin liseré sombre : visible sur ciel clair comme sur fond noir. */
 .timeline-rail-track {
   position: absolute;
   inset: 0;
-  background: rgba(243, 237, 226, 0.18);
+  background: rgba(243, 237, 226, 0.7);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .timeline-rail-marker {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 7px;
-  height: 7px;
-  margin-left: -3px;
+  width: 9px;
+  height: 9px;
+  margin-left: -4px;
   border-radius: 50%;
   background: var(--color-text);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.45);
 }
 
 .timeline-rail-year {
   position: absolute;
-  right: 0.85rem;
+  right: 1rem;
   top: 0;
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
   letter-spacing: 0.08em;
-  color: var(--color-muted);
+  color: var(--color-text);
+  text-shadow: var(--text-halo);
   white-space: nowrap;
   transform: translateY(-50%);
+}
+
+/* Sur petit écran la légende occupe toute la largeur : le label d'année ne
+   tiendrait pas à côté sans la recouvrir, on garde juste le trait et le point. */
+@media (max-width: 760px) {
+  .timeline-rail-year {
+    display: none;
+  }
 }
 
 /* ---- Crédits ---- */
@@ -319,4 +718,29 @@ img {
   margin: 0 0 1rem;
   display: grid;
   gap: 0.35rem;
+}
+
+/* Bouton de son (créé par script.js, donc absent en repli). Chrome d'interface : neutre, jamais jaune. */
+.sound-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  padding: 0.45rem 0.8rem;
+  font: 600 0.8rem/1 var(--font-sans);
+  color: var(--color-text);
+  background: rgba(8, 6, 4, 0.55);
+  border: 1px solid rgba(243, 237, 226, 0.45);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.sound-toggle[aria-pressed="true"] {
+  background: rgba(243, 237, 226, 0.9);
+  color: var(--color-bg);
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
 }

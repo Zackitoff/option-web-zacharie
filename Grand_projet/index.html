@@ -59,18 +59,128 @@
         </div>
       </section>
 
-      <!-- 2019–2020 : le chantier, une carte comme les autres (plus de convoi d'engins animés). -->
-      <section class="frame" data-year="2019–2020">
-        <img
-          class="frame-photo"
-          src="images/chantier-2019-2020.jpg"
-          alt="Chantier de démolition et reconstruction de la patinoire du Voyebœuf entre 2019 et 2020."
-          loading="eager"
-          decoding="async">
+      <!-- 2019–2020 : le chantier. Les photos s'empilent dans .chantier-photos ; chaque engin
+           traverse l'écran de droite à gauche et révèle la photo suivante derrière lui
+           (voir addPass() dans script.js). L'engin n°1 révèle la couche n°2, l'engin n°2 la
+           couche n°3, etc. : pour ajouter une étape, ajouter une couche + un engin, le script
+           s'adapte tout seul. La couche "--main" est celle qu'on garde sans JS. -->
+      <section class="frame frame--chantier" data-year="2019–2020">
+        <div class="frame-photo chantier-photos">
+          <!-- Départ : la même photo que la carte 2018 (le fondu entre les deux ne change que la légende). -->
+          <img
+            class="chantier-layer chantier-layer--warm"
+            src="images/voyeboeuf-interieur-2014.jpg"
+            alt=""
+            loading="eager"
+            decoding="async">
+          <!-- Révélée par la pelleteuse. -->
+          <img
+            class="chantier-layer chantier-layer--main"
+            src="images/chantier-2019-2020.jpg"
+            alt="Intérieur de la nouvelle patinoire pendant les travaux : échafaudages devant les loges, planches empilées sur la glace, sièges encore sous plastique."
+            loading="eager"
+            decoding="async">
+          <!-- Révélée par la grue : la même photo que la carte 2022. -->
+          <img
+            class="chantier-layer"
+            src="images/raiffeisen-arena-2022.jpg"
+            alt=""
+            loading="eager"
+            decoding="async">
+
+          <!-- data-anchor : où passe le bord de la photo révélée dans l'engin (0 = avant, 1 = arrière). -->
+          <img class="chantier-engin chantier-engin--pelleteuse" src="images/machine.png" alt="" data-anchor="0.4" loading="eager" decoding="async">
+          <img class="chantier-engin chantier-engin--grue" src="images/grue.png" alt="" data-anchor="0.33" loading="eager" decoding="async">
+          <img class="chantier-ouvrier" src="images/ouvrier.webp" alt="" loading="eager" decoding="async">
+        </div>
         <div class="frame-caption">
           <span class="title-mark" aria-hidden="true"></span>
           <h2 class="frame-title">2019–2020 — Le Voyebœuf disparaît</h2>
           <p class="frame-text">Pièce par pièce, l'ancienne structure est démontée pour laisser place au nouveau bâtiment. Ce qui existait depuis 1973 a vraiment disparu.</p>
+        </div>
+      </section>
+
+      <!-- 2 février 2020 : la finale de la Coupe de Suisse, racontée par un joueur (interview de
+           Bastien Pouilly, 14 septembre 2024). Pas de légende classique : des "temps" qui se
+           succèdent au scroll, tous réglés ici, dans le HTML :
+             data-from = l'élément apparaît, data-to = il disparaît, en unités depuis le début
+             du palier (voir le bloc "finale" de script.js) ;
+             data-reveal (sur le bloc photo) = le moment où la 1re photo s'allume : le coup de sifflet
+             final ; data-at (sur les photos suivantes) = le moment où elles recouvrent la précédente.
+           Un élément sans data-from est déjà là à l'arrivée sur la carte. Sans JS, tout s'affiche
+           simplement l'un sous l'autre. -->
+      <section class="frame frame--finale frame--beat" data-year="02.02.2020">
+        <div class="frame-caption finale-scene">
+
+          <div class="finale-temps" data-to="12">
+            <p class="frame-kicker">Coupe de Suisse · 2 février 2020</p>
+            <h2 class="frame-title">La finale, à Lausanne</h2>
+            <p class="frame-text">Le Voyebœuf est en plein chantier : 2&nbsp;500 places au lieu de 4&nbsp;200. La fédération estime qu'il ne remplit pas les conditions d'une finale, qui se jouera à la Vaudoise Aréna de Lausanne.</p>
+            <p class="frame-text">Ajoie, club de deuxième division, y affronte Davos. Sur sa route, il a déjà sorti Lausanne, les ZSC Lions et Bienne.</p>
+          </div>
+
+          <figure class="finale-temps finale-quote" data-from="13" data-to="28">
+            <blockquote class="finale-citation">
+              <p>On avait aucune pression : c'était une équipe de Ligue&nbsp;A, on était en Ligue&nbsp;B. On n'avait quasi aucune chance de gagner, on avait déjà fait le maximum.</p>
+              <p class="finale-ligne finale-ligne--accent" data-from="19">Mais quand on est arrivé dans la patinoire, qui était que jaune et noire, là c'est monté, mais vraiment monté.</p>
+            </blockquote>
+            <figcaption class="finale-auteur">Bastien Pouilly, défenseur du HC Ajoie</figcaption>
+          </figure>
+
+          <figure class="finale-temps finale-quote finale-quote--long" data-from="29" data-to="52">
+            <blockquote class="finale-citation">
+              <p>Vu que j'étais en première ligne, tu sais, les cinq, ils entrent sur la glace avec un enfant du sponsor. C'était Zurich Assurance.</p>
+              <p class="finale-ligne" data-from="35">J'croyais que le p'tit il tremblait parce qu'il avait peur. Je lui ai dit&nbsp;: «&nbsp;Mais c'est bon, ça va, allez, faut arrêter de trembler.&nbsp;»</p>
+              <p class="finale-ligne finale-ligne--accent" data-from="41">Et il m'a répondu&nbsp;: «&nbsp;C'est pas moi qui <span class="finale-tremble">tremble</span>.&nbsp;»</p>
+              <p class="finale-ligne" data-from="46">À ce moment, je me suis dit : c'est bon, souffle, parce que sinon ça ne va jamais aller.</p>
+            </blockquote>
+            <figcaption class="finale-auteur">Bastien Pouilly, défenseur du HC Ajoie</figcaption>
+          </figure>
+
+          <div class="finale-temps finale-temps--resultat" data-from="55">
+            <p class="finale-score">
+              <span class="finale-equipe">Ajoie</span>
+              <span class="finale-chiffres">7&nbsp;–&nbsp;3</span>
+              <span class="finale-equipe">Davos</span>
+            </p>
+            <p class="frame-text">Première Coupe de Suisse de l'histoire du club.</p>
+            <figure class="finale-ligne finale-quote finale-quote--fin" data-from="66">
+              <blockquote class="finale-citation">
+                <p>En tant qu'hockeyeur, je souhaite à quelqu'un d'autre de vivre un truc comme ça.</p>
+              </blockquote>
+              <figcaption class="finale-auteur">Bastien Pouilly</figcaption>
+            </figure>
+          </div>
+
+        </div>
+
+        <!-- Les photos n'arrivent qu'au coup de sifflet final (data-reveal : la 1re s'allume), puis
+             s'enchaînent en fondu : chaque photo marquée data-at recouvre la précédente à ce moment-là.
+             La 3e ne fait que 640 px : plutôt que de l'étirer plein écran, on la pose nette sur une
+             copie floutée. Sans JS, seule la 1re est affichée. -->
+        <div class="frame-photo finale-photo" data-reveal="53">
+          <img
+            class="finale-layer finale-layer--equipe"
+            src="images/finale-2020-equipe.jpg"
+            alt="Les joueurs du HC Ajoie serrés autour de la coupe, médaille au cou, devant des gradins pleins de supporters jaune et noir et de drapeaux jurassiens."
+            loading="eager"
+            decoding="async">
+          <img
+            class="finale-layer"
+            src="images/finale-2020-tour-d-honneur.jpg"
+            alt="Les joueurs font le tour de la glace avec la coupe, face aux gradins."
+            data-at="60"
+            loading="eager"
+            decoding="async">
+          <div class="finale-layer finale-poster" data-at="66">
+            <img class="finale-fond" src="images/finale-2020-coupe-confettis.jpg" alt="" aria-hidden="true" loading="eager" decoding="async">
+            <img
+              class="finale-affiche"
+              src="images/finale-2020-coupe-confettis.jpg"
+              alt="Un joueur du HC Ajoie soulève la coupe à bout de bras sous une pluie de confettis dorés."
+              loading="eager"
+              decoding="async">
+          </div>
         </div>
       </section>
 
@@ -95,7 +205,7 @@
       </section>
 
       <!-- Aujourd'hui : reste affichée à la fin, 3e temps fort. -->
-      <section class="frame frame--beat" data-year="Aujourd'hui">
+      <section class="frame frame--beat frame--cta" data-year="Aujourd'hui">
         <img
           class="frame-photo"
           src="images/match-national-league-aujourdhui.jpg"
@@ -106,6 +216,12 @@
           <span class="title-mark" aria-hidden="true"></span>
           <h2 class="frame-title">Aujourd'hui, l'Ajoie joue <span class="tag">à guichets fermés</span></h2>
           <p class="frame-text">Le HC Ajoie joue désormais à guichets fermés dans une arena moderne : le lieu a retrouvé — et dépassé — sa place dans la communauté.</p>
+          <p class="frame-actions">
+            <a class="button" href="https://www.hc-ajoie.ch/fr/Matchs/Calendrier-resultats/Calendrier-Resultats.html" target="_blank" rel="noopener noreferrer">
+              Calendrier des matchs <span class="button-arrow" aria-hidden="true">→</span>
+              <span class="sr-only">(site officiel du HC Ajoie, s'ouvre dans un nouvel onglet)</span>
+            </a>
+          </p>
         </div>
       </section>
 
@@ -133,6 +249,7 @@
       <li>1973 — « Voyeboeuf Aussenansicht.jpg », Wikimedia Commons (auteur à vérifier sur la page du fichier)</li>
       <li>2014 — « Swiss Cup, HC Ajoie vs. Genève-Servette HC, 1st October 2014 01.JPG », Wikimedia Commons</li>
       <li>2019–2020 — photo à sourcer (archive personnelle ou presse, droits à vérifier avant usage)</li>
+      <li>2 février 2020 — trois photos de la finale de la Coupe de Suisse, fournies par Zacharie Filipetto, auteur·e·s et agence à préciser. Déroulé du match d'après la RSI, SRF et Blick ; témoignage de Bastien Pouilly, interview du 14 septembre 2024.</li>
       <li>2022 — « Neue Arena Ajoie.jpg », Wikimedia Commons</li>
       <li>Aujourd'hui — photo à sourcer (photo personnelle ou autorisation HC Ajoie)</li>
     </ul>
